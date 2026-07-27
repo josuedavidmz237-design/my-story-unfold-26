@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
