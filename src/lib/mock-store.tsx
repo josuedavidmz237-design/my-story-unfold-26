@@ -72,6 +72,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>(DEFAULT_HABITS);
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [weeklySummary, setSummary] = useState<WeeklySummary | null>(null);
+  const [weeklyPlans, setWeeklyPlans] = useState<Record<string, string>>({});
+  const [weeklySummaries, setWeeklySummaries] = useState<Record<string, WeeklySummary>>({});
 
   // Restore from sessionStorage on client
   useEffect(() => {
@@ -83,6 +85,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         if (s.habits) setHabits(s.habits);
         if (s.entries) setEntries(s.entries);
         if (s.weeklySummary) setSummary(s.weeklySummary);
+        if (s.weeklyPlans) setWeeklyPlans(s.weeklyPlans);
+        if (s.weeklySummaries) setWeeklySummaries(s.weeklySummaries);
       }
     } catch {}
   }, []);
@@ -91,10 +95,11 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
     try {
       sessionStorage.setItem(
         "mystoryai:store",
-        JSON.stringify({ user, habits, entries, weeklySummary }),
+        JSON.stringify({ user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries }),
       );
     } catch {}
-  }, [user, habits, entries, weeklySummary]);
+  }, [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries]);
+
 
   const value = useMemo<Store>(
     () => ({
