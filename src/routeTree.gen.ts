@@ -13,7 +13,10 @@ import { Route as ResumenRouteImport } from './routes/resumen'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HoyRouteImport } from './routes/hoy'
 import { Route as HabitosRouteImport } from './routes/habitos'
+import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SemanaWeekRouteImport } from './routes/semana.$week'
+import { Route as DiaDateRouteImport } from './routes/dia.$date'
 
 const ResumenRoute = ResumenRouteImport.update({
   id: '/resumen',
@@ -35,48 +38,100 @@ const HabitosRoute = HabitosRouteImport.update({
   path: '/habitos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarioRoute = CalendarioRouteImport.update({
+  id: '/calendario',
+  path: '/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SemanaWeekRoute = SemanaWeekRouteImport.update({
+  id: '/semana/$week',
+  path: '/semana/$week',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiaDateRoute = DiaDateRouteImport.update({
+  id: '/dia/$date',
+  path: '/dia/$date',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
   '/resumen': typeof ResumenRoute
+  '/dia/$date': typeof DiaDateRoute
+  '/semana/$week': typeof SemanaWeekRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
   '/resumen': typeof ResumenRoute
+  '/dia/$date': typeof DiaDateRoute
+  '/semana/$week': typeof SemanaWeekRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendario': typeof CalendarioRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
   '/resumen': typeof ResumenRoute
+  '/dia/$date': typeof DiaDateRoute
+  '/semana/$week': typeof SemanaWeekRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/habitos' | '/hoy' | '/login' | '/resumen'
+  fullPaths:
+    | '/'
+    | '/calendario'
+    | '/habitos'
+    | '/hoy'
+    | '/login'
+    | '/resumen'
+    | '/dia/$date'
+    | '/semana/$week'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/habitos' | '/hoy' | '/login' | '/resumen'
-  id: '__root__' | '/' | '/habitos' | '/hoy' | '/login' | '/resumen'
+  to:
+    | '/'
+    | '/calendario'
+    | '/habitos'
+    | '/hoy'
+    | '/login'
+    | '/resumen'
+    | '/dia/$date'
+    | '/semana/$week'
+  id:
+    | '__root__'
+    | '/'
+    | '/calendario'
+    | '/habitos'
+    | '/hoy'
+    | '/login'
+    | '/resumen'
+    | '/dia/$date'
+    | '/semana/$week'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarioRoute: typeof CalendarioRoute
   HabitosRoute: typeof HabitosRoute
   HoyRoute: typeof HoyRoute
   LoginRoute: typeof LoginRoute
   ResumenRoute: typeof ResumenRoute
+  DiaDateRoute: typeof DiaDateRoute
+  SemanaWeekRoute: typeof SemanaWeekRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HabitosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendario': {
+      id: '/calendario'
+      path: '/calendario'
+      fullPath: '/calendario'
+      preLoaderRoute: typeof CalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -116,16 +178,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/semana/$week': {
+      id: '/semana/$week'
+      path: '/semana/$week'
+      fullPath: '/semana/$week'
+      preLoaderRoute: typeof SemanaWeekRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dia/$date': {
+      id: '/dia/$date'
+      path: '/dia/$date'
+      fullPath: '/dia/$date'
+      preLoaderRoute: typeof DiaDateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarioRoute: CalendarioRoute,
   HabitosRoute: HabitosRoute,
   HoyRoute: HoyRoute,
   LoginRoute: LoginRoute,
   ResumenRoute: ResumenRoute,
+  DiaDateRoute: DiaDateRoute,
+  SemanaWeekRoute: SemanaWeekRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
