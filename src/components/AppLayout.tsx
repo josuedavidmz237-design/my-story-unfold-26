@@ -1,11 +1,12 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { CalendarCheck, ListChecks, Sparkles, LogOut } from "lucide-react";
+import { CalendarCheck, ListChecks, Sparkles, LogOut, CalendarDays } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { useStore } from "@/lib/mock-store";
 
 const NAV = [
   { to: "/hoy", label: "Hoy", icon: CalendarCheck },
   { to: "/habitos", label: "Hábitos", icon: ListChecks },
+  { to: "/calendario", label: "Calendario", icon: CalendarDays },
   { to: "/resumen", label: "Resumen", icon: Sparkles },
 ] as const;
 
@@ -84,7 +85,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       {/* Bottom nav (mobile) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-border/60 bg-background/80 backdrop-blur-xl">
-        <ul className="mx-auto grid max-w-md grid-cols-3">
+        <ul className="mx-auto grid max-w-md grid-cols-4">
           {NAV.map(({ to, label, icon: Icon }) => {
             const active = pathname === to || (to === "/hoy" && pathname === "/");
             return (
