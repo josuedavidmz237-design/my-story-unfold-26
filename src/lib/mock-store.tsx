@@ -51,6 +51,8 @@ type Store = {
   habits: Habit[];
   entries: Record<string, DailyEntry>;
   weeklySummary: WeeklySummary | null;
+  weeklyPlans: Record<string, string>;
+  weeklySummaries: Record<string, WeeklySummary>;
   login: (name: string, email: string) => void;
   logout: () => void;
   addHabit: (name: string, icon?: string) => { ok: boolean; error?: string };
@@ -58,7 +60,10 @@ type Store = {
   deleteHabit: (id: string) => void;
   saveTodayEntry: (data: { habitsCompleted: string[]; journalText: string; guidedAnswer: string }) => void;
   setWeeklySummary: (s: WeeklySummary) => void;
+  setWeeklyPlan: (weekKey: string, text: string) => void;
+  setWeeklySummaryFor: (weekKey: string, s: WeeklySummary) => void;
 };
+
 
 const Ctx = createContext<Store | null>(null);
 
@@ -67,6 +72,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>(DEFAULT_HABITS);
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [weeklySummary, setSummary] = useState<WeeklySummary | null>(null);
+  const [weeklyPlans, setWeeklyPlans] = useState<Record<string, string>>({});
+  const [weeklySummaries, setWeeklySummaries] = useState<Record<string, WeeklySummary>>({});
 
   // Restore from sessionStorage on client
   useEffect(() => {
@@ -78,6 +85,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         if (s.habits) setHabits(s.habits);
         if (s.entries) setEntries(s.entries);
         if (s.weeklySummary) setSummary(s.weeklySummary);
+        if (s.weeklyPlans) setWeeklyPlans(s.weeklyPlans);
+        if (s.weeklySummaries) setWeeklySummaries(s.weeklySummaries);
       }
     } catch {}
   }, []);
@@ -86,10 +95,11 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
     try {
       sessionStorage.setItem(
         "mystoryai:store",
-        JSON.stringify({ user, habits, entries, weeklySummary }),
+        JSON.stringify({ user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries }),
       );
     } catch {}
-  }, [user, habits, entries, weeklySummary]);
+  }, [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries]);
+
 
   const value = useMemo<Store>(
     () => ({
@@ -97,6 +107,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       habits,
       entries,
       weeklySummary,
+      weeklyPlans,
+      weeklySummaries,
       login: (name, email) =>
         setUser({ id: "u_mock", name: name || email.split("@")[0] || "Amig@", email }),
       logout: () => setUser(null),
@@ -146,8 +158,11 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         }));
       },
       setWeeklySummary: (s) => setSummary(s),
+      setWeeklyPlan: (wk, text) => setWeeklyPlans((prev) => ({ ...prev, [wk]: text })),
+      setWeeklySummaryFor: (wk, s) =>
+        setWeeklySummaries((prev) => ({ ...prev, [wk]: s })),
     }),
-    [user, habits, entries, weeklySummary],
+    [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
