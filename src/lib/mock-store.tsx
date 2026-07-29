@@ -107,6 +107,8 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       habits,
       entries,
       weeklySummary,
+      weeklyPlans,
+      weeklySummaries,
       login: (name, email) =>
         setUser({ id: "u_mock", name: name || email.split("@")[0] || "Amig@", email }),
       logout: () => setUser(null),
@@ -156,8 +158,11 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
         }));
       },
       setWeeklySummary: (s) => setSummary(s),
+      setWeeklyPlan: (wk, text) => setWeeklyPlans((prev) => ({ ...prev, [wk]: text })),
+      setWeeklySummaryFor: (wk, s) =>
+        setWeeklySummaries((prev) => ({ ...prev, [wk]: s })),
     }),
-    [user, habits, entries, weeklySummary],
+    [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
