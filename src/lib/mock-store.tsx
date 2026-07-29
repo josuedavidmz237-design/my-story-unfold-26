@@ -51,6 +51,8 @@ type Store = {
   habits: Habit[];
   entries: Record<string, DailyEntry>;
   weeklySummary: WeeklySummary | null;
+  weeklyPlans: Record<string, string>;
+  weeklySummaries: Record<string, WeeklySummary>;
   login: (name: string, email: string) => void;
   logout: () => void;
   addHabit: (name: string, icon?: string) => { ok: boolean; error?: string };
@@ -58,7 +60,10 @@ type Store = {
   deleteHabit: (id: string) => void;
   saveTodayEntry: (data: { habitsCompleted: string[]; journalText: string; guidedAnswer: string }) => void;
   setWeeklySummary: (s: WeeklySummary) => void;
+  setWeeklyPlan: (weekKey: string, text: string) => void;
+  setWeeklySummaryFor: (weekKey: string, s: WeeklySummary) => void;
 };
+
 
 const Ctx = createContext<Store | null>(null);
 
