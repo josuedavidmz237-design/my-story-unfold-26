@@ -3,7 +3,8 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useStore } from "@/lib/mock-store";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth, authErrorMessage } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -23,51 +24,44 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
-type Mode = "signin" | "signup";
-
 function LoginPage() {
-  const { user, login } = useStore();
+  const { user, loading: sessionLoading } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>("signin");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (user) navigate({ to: "/hoy", replace: true });
-  }, [user, navigate]);
+    if (!sessionLoading && user) navigate({ to: "/hoy", replace: true });
+  }, [user, sessionLoading, navigate]);
 
   const errors = useMemo(() => {
-    const e: { name?: string; email?: string; password?: string } = {};
-    if (mode === "signup" && !name.trim()) e.name = "Ingresa tu nombre";
+    const e: { email?: string; password?: string } = {};
     if (!email.trim()) e.email = "Email requerido";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      e.email = "Ingresa un email válido";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Ingresa un email válido";
     if (!password) e.password = "Contraseña requerida";
-    else if (password.length < 6) e.password = "Mínimo 6 caracteres";
+    else if (password.length < 8) e.password = "Mínimo 8 caracteres";
     return e;
-  }, [mode, name, email, password]);
+  }, [email, password]);
 
   const isValid = Object.keys(errors).length === 0;
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    setTouched({ name: true, email: true, password: true });
-    if (!isValid) return;
+    setTouched({ email: true, password: true });
+    if (!isValid || loading) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    login(mode === "signup" ? name : "", email);
-    toast.success(mode === "signup" ? "¡Cuenta creada!" : "¡Bienvenid@ de vuelta!");
-    navigate({ to: "/hoy", replace: true });
-  };
-
-  const handleDemo = async () => {
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 500));
-    login("Demo", "demo@mystoryai.app");
-    toast.success("Entrando como demo…");
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (error) {
+      setLoading(false);
+      toast.error(authErrorMessage(error.message, "signin"));
+      return;
+    }
+    toast.success("¡Bienvenid@ de vuelta!");
     navigate({ to: "/hoy", replace: true });
   };
 
@@ -86,37 +80,18 @@ function LoginPage() {
 
         <div className="glass-card p-6 sm:p-7">
           <div className="mb-6 grid grid-cols-2 gap-1 rounded-full bg-white/5 p-1">
-            {(["signin", "signup"] as Mode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setMode(m)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  mode === m ? "bg-primary/20 text-primary" : "text-muted-foreground"
-                }`}
-              >
-                {m === "signin" ? "Iniciar sesión" : "Crear cuenta"}
-              </button>
-            ))}
+            <span className="rounded-full bg-primary/20 px-4 py-2 text-center text-sm font-medium text-primary">
+              Iniciar sesión
+            </span>
+            <Link
+              to="/registro"
+              className="rounded-full px-4 py-2 text-center text-sm font-medium text-muted-foreground"
+            >
+              Crear cuenta
+            </Link>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-            {mode === "signup" && (
-              <Field
-                label="Nombre"
-                error={touched.name ? errors.name : undefined}
-              >
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
-                  className="input-base"
-                  placeholder="¿Cómo te llamas?"
-                  autoComplete="name"
-                />
-              </Field>
-            )}
             <Field label="Email" error={touched.email ? errors.email : undefined}>
               <input
                 type="email"
@@ -135,8 +110,8 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                 className="input-base"
-                placeholder="Mínimo 6 caracteres"
-                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                placeholder="Mínimo 8 caracteres"
+                autoComplete="current-password"
               />
             </Field>
 
@@ -149,29 +124,18 @@ function LoginPage() {
                 <>
                   <Loader2 className="animate-spin" size={16} /> Entrando…
                 </>
-              ) : mode === "signup" ? (
-                "Crear cuenta"
               ) : (
                 "Entrar"
               )}
             </button>
           </form>
-
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={handleDemo}
-              disabled={loading}
-              className="text-sm font-medium text-primary hover:text-primary-glow disabled:opacity-50"
-            >
-              Continuar como demo →
-            </button>
-          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Esta es una demo de UI. Ningún dato se envía a un servidor.{" "}
-          <Link to="/hoy" className="underline">Saltar</Link>
+          ¿Aún no tienes cuenta?{" "}
+          <Link to="/registro" className="underline">
+            Crea una aquí
+          </Link>
         </p>
       </div>
 
@@ -218,4 +182,3 @@ function Field({
     </label>
   );
 }
-
