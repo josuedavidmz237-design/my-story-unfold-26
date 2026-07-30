@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResumenRouteImport } from './routes/resumen'
+import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HoyRouteImport } from './routes/hoy'
 import { Route as HabitosRouteImport } from './routes/habitos'
@@ -21,6 +22,11 @@ import { Route as DiaDateRouteImport } from './routes/dia.$date'
 const ResumenRoute = ResumenRouteImport.update({
   id: '/resumen',
   path: '/resumen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistroRoute = RegistroRouteImport.update({
+  id: '/registro',
+  path: '/registro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/habitos'
     | '/hoy'
     | '/login'
+    | '/registro'
     | '/resumen'
     | '/dia/$date'
     | '/semana/$week'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/habitos'
     | '/hoy'
     | '/login'
+    | '/registro'
     | '/resumen'
     | '/dia/$date'
     | '/semana/$week'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/habitos'
     | '/hoy'
     | '/login'
+    | '/registro'
     | '/resumen'
     | '/dia/$date'
     | '/semana/$week'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   HabitosRoute: typeof HabitosRoute
   HoyRoute: typeof HoyRoute
   LoginRoute: typeof LoginRoute
+  RegistroRoute: typeof RegistroRoute
   ResumenRoute: typeof ResumenRoute
   DiaDateRoute: typeof DiaDateRoute
   SemanaWeekRoute: typeof SemanaWeekRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/resumen'
       fullPath: '/resumen'
       preLoaderRoute: typeof ResumenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registro': {
+      id: '/registro'
+      path: '/registro'
+      fullPath: '/registro'
+      preLoaderRoute: typeof RegistroRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   HabitosRoute: HabitosRoute,
   HoyRoute: HoyRoute,
   LoginRoute: LoginRoute,
+  RegistroRoute: RegistroRoute,
   ResumenRoute: ResumenRoute,
   DiaDateRoute: DiaDateRoute,
   SemanaWeekRoute: SemanaWeekRoute,
