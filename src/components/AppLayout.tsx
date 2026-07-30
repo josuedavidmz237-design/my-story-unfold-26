@@ -1,7 +1,9 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { CalendarCheck, ListChecks, Sparkles, LogOut, CalendarDays } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
-import { useStore } from "@/lib/mock-store";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
   { to: "/hoy", label: "Hoy", icon: CalendarCheck },
@@ -11,13 +13,71 @@ const NAV = [
 ] as const;
 
 export function AppLayout({ children }: { children: ReactNode }) {
-  const { user, logout } = useStore();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user) navigate({ to: "/login" });
-  }, [user, navigate]);
+    if (!loading && !user) navigate({ to: "/login", replace: true });
+  }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
+
+  const handleLogout = async () => {
+    setMenuOpen(false);
+    await supabase.auth.signOut();
+    toast.success("Sesión cerrada exitosamente");
+    navigate({ to: "/login", replace: true });
+  };
+
+  if (loading || !user) {
+    return (
+      <div className="ambient-bg flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+      </div>
+    );
+  }
+
+  const email = user.email ?? "";
+  const initial = (email[0] ?? "?").toUpperCase();
+
+  const avatarMenu = (compact?: boolean) => (
+    <div className="relative" ref={compact ? undefined : menuRef}>
+      <button
+        onClick={() => setMenuOpen((v) => !v)}
+        className="flex items-center gap-2 rounded-full p-1 pr-2 transition-colors hover:bg-white/5"
+        aria-label="Menú de usuario"
+        aria-expanded={menuOpen}
+      >
+        <span className="flex h-8 w-8 items-center justify-center rounded-full gradient-primary text-sm font-semibold text-white">
+          {initial}
+        </span>
+        {!compact && (
+          <span className="max-w-[180px] truncate text-sm text-muted-foreground">{email}</span>
+        )}
+      </button>
+      {menuOpen && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-60 rounded-xl border border-border/60 bg-card/95 p-2 shadow-xl backdrop-blur-xl">
+          <p className="truncate px-3 py-2 text-xs text-muted-foreground">{email}</p>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-white/5"
+          >
+            <LogOut size={16} /> Cerrar Sesión
+          </button>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="ambient-bg min-h-screen pb-24 lg:pb-0 lg:pt-20">
@@ -46,38 +106,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Hola, {user?.name ?? "invitado"}</span>
-            <button
-              onClick={() => {
-                logout();
-                navigate({ to: "/login" });
-              }}
-              className="rounded-full p-2 text-muted-foreground hover:text-foreground hover:bg-white/5"
-              aria-label="Cerrar sesión"
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
+          <div className="flex items-center gap-3">{avatarMenu()}</div>
         </div>
       </header>
 
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-40 border-b border-border/60 bg-background/60 backdrop-blur-xl">
-        <div className="flex h-14 items-center justify-between px-4">
+        <div className="flex h-14 items-center justify-between px-4" ref={menuRef}>
           <Link to="/hoy" className="font-display text-lg font-semibold text-gradient">
             MyStoryAI
           </Link>
-          <button
-            onClick={() => {
-              logout();
-              navigate({ to: "/login" });
-            }}
-            className="rounded-full p-2 text-muted-foreground hover:text-foreground"
-            aria-label="Cerrar sesión"
-          >
-            <LogOut size={18} />
-          </button>
+          {avatarMenu(true)}
         </div>
       </header>
 

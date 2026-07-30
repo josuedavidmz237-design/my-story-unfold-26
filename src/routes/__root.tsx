@@ -12,6 +12,7 @@ import { Toaster } from "sonner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { MockStoreProvider } from "@/lib/mock-store";
+import { AuthProvider } from "@/lib/auth-context";
 
 function NotFoundComponent() {
   return (
@@ -116,6 +117,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthProvider>
       <MockStoreProvider>
         <Outlet />
         <Toaster
@@ -131,6 +133,7 @@ function RootComponent() {
           }}
         />
       </MockStoreProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

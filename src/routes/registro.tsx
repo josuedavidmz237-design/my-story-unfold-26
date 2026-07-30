@@ -6,29 +6,30 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, authErrorMessage } from "@/lib/auth-context";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/registro")({
   head: () => ({
     meta: [
-      { title: "Iniciar sesión — MyStoryAI" },
+      { title: "Crear cuenta — MyStoryAI" },
       {
         name: "description",
-        content: "Ingresa a MyStoryAI y sigue construyendo tu historia de progreso.",
+        content: "Crea tu cuenta en MyStoryAI y empieza a registrar tu historia de progreso.",
       },
-      { property: "og:title", content: "Iniciar sesión — MyStoryAI" },
+      { property: "og:title", content: "Crear cuenta — MyStoryAI" },
       {
         property: "og:description",
-        content: "Ingresa a MyStoryAI y sigue construyendo tu historia de progreso.",
+        content: "Crea tu cuenta en MyStoryAI y empieza a registrar tu historia de progreso.",
       },
     ],
   }),
-  component: LoginPage,
+  component: RegisterPage,
 });
 
-function LoginPage() {
+function RegisterPage() {
   const { user, loading: sessionLoading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
@@ -37,31 +38,40 @@ function LoginPage() {
   }, [user, sessionLoading, navigate]);
 
   const errors = useMemo(() => {
-    const e: { email?: string; password?: string } = {};
+    const e: { email?: string; password?: string; confirm?: string } = {};
     if (!email.trim()) e.email = "Email requerido";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Ingresa un email válido";
     if (!password) e.password = "Contraseña requerida";
     else if (password.length < 8) e.password = "Mínimo 8 caracteres";
+    if (!confirm) e.confirm = "Confirma tu contraseña";
+    else if (confirm !== password) e.confirm = "Las contraseñas no coinciden";
     return e;
-  }, [email, password]);
+  }, [email, password, confirm]);
 
   const isValid = Object.keys(errors).length === 0;
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    setTouched({ email: true, password: true });
+    setTouched({ email: true, password: true, confirm: true });
     if (!isValid || loading) return;
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
+      options: { emailRedirectTo: window.location.origin },
     });
     if (error) {
       setLoading(false);
-      toast.error(authErrorMessage(error.message, "signin"));
+      toast.error(authErrorMessage(error.message, "signup"));
       return;
     }
-    toast.success("¡Bienvenid@ de vuelta!");
+    if (!data.session) {
+      setLoading(false);
+      toast.success("Cuenta creada. Revisa tu correo para confirmarla.");
+      navigate({ to: "/login", replace: true });
+      return;
+    }
+    toast.success("¡Cuenta creada!");
     navigate({ to: "/hoy", replace: true });
   };
 
@@ -80,15 +90,15 @@ function LoginPage() {
 
         <div className="glass-card p-6 sm:p-7">
           <div className="mb-6 grid grid-cols-2 gap-1 rounded-full bg-white/5 p-1">
-            <span className="rounded-full bg-primary/20 px-4 py-2 text-center text-sm font-medium text-primary">
-              Iniciar sesión
-            </span>
             <Link
-              to="/registro"
+              to="/login"
               className="rounded-full px-4 py-2 text-center text-sm font-medium text-muted-foreground"
             >
-              Crear cuenta
+              Iniciar sesión
             </Link>
+            <span className="rounded-full bg-primary/20 px-4 py-2 text-center text-sm font-medium text-primary">
+              Crear cuenta
+            </span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -111,7 +121,21 @@ function LoginPage() {
                 onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                 className="input-base"
                 placeholder="Mínimo 8 caracteres"
-                autoComplete="current-password"
+                autoComplete="new-password"
+              />
+            </Field>
+            <Field
+              label="Confirmar contraseña"
+              error={touched.confirm ? errors.confirm : undefined}
+            >
+              <input
+                type="password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, confirm: true }))}
+                className="input-base"
+                placeholder="Repite tu contraseña"
+                autoComplete="new-password"
               />
             </Field>
 
@@ -122,19 +146,19 @@ function LoginPage() {
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" size={16} /> Entrando…
+                  <Loader2 className="animate-spin" size={16} /> Creando cuenta…
                 </>
               ) : (
-                "Entrar"
+                "Crear cuenta"
               )}
             </button>
           </form>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          ¿Aún no tienes cuenta?{" "}
-          <Link to="/registro" className="underline">
-            Crea una aquí
+          ¿Ya tienes cuenta?{" "}
+          <Link to="/login" className="underline">
+            Inicia sesión
           </Link>
         </p>
       </div>
