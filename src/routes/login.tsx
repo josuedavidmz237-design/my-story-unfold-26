@@ -75,7 +75,8 @@ function LoginPage() {
       return;
     }
     toast.success("¡Bienvenid@ de vuelta!");
-    navigate({ to: "/hoy", replace: true });
+    goAfterAuth();
+
   };
 
   return (
