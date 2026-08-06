@@ -100,7 +100,7 @@ export const logHabit = defineTool({
           log_date: day,
           completed,
         },
-        { onConflict: "user_id,habit_id,log_date" },
+        { onConflict: "habit_id,log_date" },
       )
       .select("id, habit_id, log_date, completed");
     if (error) return toolError(error.message);
