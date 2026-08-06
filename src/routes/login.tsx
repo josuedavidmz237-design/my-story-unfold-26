@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, authErrorMessage } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") ? s.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Iniciar sesión — MyStoryAI" },
@@ -23,6 +26,7 @@ export const Route = createFileRoute("/login")({
   }),
   component: LoginPage,
 });
+
 
 function LoginPage() {
   const { user, loading: sessionLoading } = useAuth();
