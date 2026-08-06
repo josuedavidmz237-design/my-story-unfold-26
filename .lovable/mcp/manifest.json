@@ -1,0 +1,189 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://knrimtzuoafmocwbbovm.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "my-story-ai-progress-journal",
+      "version": "0.1.0",
+      "title": "My Story AI: Progress Journal"
+    },
+    "tools": [
+      {
+        "name": "list_habits",
+        "title": "Listar hábitos",
+        "description": "Lista los hábitos del usuario autenticado.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_habit",
+        "title": "Crear hábito",
+        "description": "Crea un hábito nuevo para el usuario autenticado.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nombre del hábito."
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_day_entry",
+        "title": "Ver registro de un día",
+        "description": "Devuelve la reflexión (journaling) y los hábitos completados de una fecha.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "date": {
+              "description": "Fecha en formato YYYY-MM-DD. Por defecto, hoy.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "save_day_entry",
+        "title": "Guardar registro del día",
+        "description": "Crea o actualiza la reflexión diaria (y opcionalmente el ánimo) de una fecha.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "reflection": {
+              "type": "string",
+              "description": "Texto del journaling del día."
+            },
+            "mood": {
+              "description": "Ánimo del 1 al 5.",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "date": {
+              "description": "Fecha en formato YYYY-MM-DD. Por defecto, hoy.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "reflection"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "log_habit",
+        "title": "Marcar hábito",
+        "description": "Marca o desmarca un hábito como completado en una fecha.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "habit_id": {
+              "type": "string",
+              "description": "ID del hábito (ver list_habits)."
+            },
+            "completed": {
+              "type": "boolean",
+              "description": "true para completado, false para no completado."
+            },
+            "date": {
+              "description": "Fecha en formato YYYY-MM-DD. Por defecto, hoy.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "habit_id",
+            "completed"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_goal",
+        "title": "Ver identidad deseada",
+        "description": "Devuelve la identidad/meta deseada del usuario autenticado.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "set_goal",
+        "title": "Definir identidad deseada",
+        "description": "Crea o actualiza la identidad/meta deseada del usuario autenticado.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "desired_identity": {
+              "type": "string",
+              "description": "En quién quiere convertirse el usuario."
+            }
+          },
+          "required": [
+            "desired_identity"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
