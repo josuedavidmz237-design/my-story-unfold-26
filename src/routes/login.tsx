@@ -31,14 +31,23 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const { user, loading: sessionLoading } = useAuth();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
+  const goAfterAuth = () => {
+    if (next) window.location.href = next;
+    else navigate({ to: "/hoy", replace: true });
+  };
+
   useEffect(() => {
-    if (!sessionLoading && user) navigate({ to: "/hoy", replace: true });
-  }, [user, sessionLoading, navigate]);
+    if (sessionLoading || !user) return;
+    if (next) window.location.href = next;
+    else navigate({ to: "/hoy", replace: true });
+  }, [user, sessionLoading, navigate, next]);
+
 
   const errors = useMemo(() => {
     const e: { email?: string; password?: string } = {};
