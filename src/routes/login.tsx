@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth, authErrorMessage } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" && s.next.startsWith("/") ? s.next : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Iniciar sesión — MyStoryAI" },
@@ -24,17 +27,27 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
 });
 
+
 function LoginPage() {
   const { user, loading: sessionLoading } = useAuth();
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
   const [loading, setLoading] = useState(false);
 
+  const goAfterAuth = () => {
+    if (next) window.location.href = next;
+    else navigate({ to: "/hoy", replace: true });
+  };
+
   useEffect(() => {
-    if (!sessionLoading && user) navigate({ to: "/hoy", replace: true });
-  }, [user, sessionLoading, navigate]);
+    if (sessionLoading || !user) return;
+    if (next) window.location.href = next;
+    else navigate({ to: "/hoy", replace: true });
+  }, [user, sessionLoading, navigate, next]);
+
 
   const errors = useMemo(() => {
     const e: { email?: string; password?: string } = {};
@@ -62,7 +75,8 @@ function LoginPage() {
       return;
     }
     toast.success("¡Bienvenid@ de vuelta!");
-    navigate({ to: "/hoy", replace: true });
+    goAfterAuth();
+
   };
 
   return (
