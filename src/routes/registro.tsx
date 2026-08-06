@@ -66,13 +66,21 @@ function RegisterPage() {
       return;
     }
     if (!data.session) {
-      setLoading(false);
-      toast.success("Cuenta creada. Revisa tu correo para confirmarla.");
-      navigate({ to: "/login", replace: true });
-      return;
+      // Si la confirmación de correo está desactivada en Supabase, esto inicia sesión directo.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (signInError) {
+        setLoading(false);
+        toast.success("Cuenta creada. Revisa tu correo para confirmarla.");
+        navigate({ to: "/login", replace: true });
+        return;
+      }
     }
     toast.success("¡Cuenta creada!");
     navigate({ to: "/hoy", replace: true });
+
   };
 
   return (
