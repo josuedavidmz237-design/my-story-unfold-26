@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { ArrowLeft, Check, Sparkles, CalendarDays } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowLeft, CalendarDays, Loader as Loader2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
-import { useStore } from "@/lib/mock-store";
 import { parseDateKey, dateKey, weekKey } from "@/lib/date-utils";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/dia/$date")({
   head: () => ({
@@ -23,13 +25,49 @@ export const Route = createFileRoute("/dia/$date")({
   ),
 });
 
+type DailyEntryRow = {
+  id: string;
+  entry_date: string;
+  reflection: string;
+  mood: number | null;
+};
+
 function DayDetailPage() {
   const { date } = useParams({ from: "/dia/$date" });
-  const { entries, habits } = useStore();
-  const entry = entries[date];
   const d = parseDateKey(date);
   const isToday = dateKey(new Date()) === date;
   const wk = weekKey(d);
+
+  const [entry, setEntry] = useState<DailyEntryRow | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("daily_entries")
+          .select("id, entry_date, reflection, mood")
+          .eq("entry_date", date)
+          .maybeSingle();
+
+        if (cancelled) return;
+        if (error) throw error;
+        setEntry(data as DailyEntryRow | null);
+      } catch (err) {
+        if (!cancelled) {
+          toast.error("No se pudo cargar el registro de este día.");
+          console.error(err);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [date]);
 
   const dateLabel = d.toLocaleDateString("es-PE", {
     weekday: "long",
@@ -65,7 +103,12 @@ function DayDetailPage() {
         </h1>
       </header>
 
-      {!entry ? (
+      {loading ? (
+        <div className="glass-card flex items-center justify-center gap-3 p-12 text-muted-foreground">
+          <Loader2 className="animate-spin" size={20} />
+          <span className="text-sm">Cargando registro…</span>
+        </div>
+      ) : !entry ? (
         <div className="glass-card flex flex-col items-center gap-4 p-10 text-center">
           <div className="grid h-14 w-14 place-items-center rounded-2xl border border-border/60 bg-white/[0.03]">
             <CalendarDays className="text-muted-foreground" size={22} />
@@ -73,7 +116,7 @@ function DayDetailPage() {
           <div>
             <h2 className="font-display text-xl font-semibold">Sin registro este día</h2>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">
-              No guardaste hábitos ni notas para esta fecha.
+              No guardaste una reflexión ni un estado de ánimo para esta fecha.
               {isToday && " Puedes hacerlo ahora desde 'Hoy'."}
             </p>
           </div>
@@ -89,72 +132,44 @@ function DayDetailPage() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
           <section className="glass-card p-6">
-            <h2 className="mb-4 font-display text-xl font-semibold">Hábitos</h2>
-            {habits.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No hay hábitos configurados.</p>
+            <div className="mb-4 flex items-center gap-2">
+              <Sparkles size={16} className="text-accent" />
+              <h2 className="font-display text-xl font-semibold">Reflexión</h2>
+            </div>
+            {entry.reflection ? (
+              <p className="whitespace-pre-wrap rounded-xl border border-border bg-white/[0.03] p-4 text-sm leading-relaxed text-foreground/90">
+                {entry.reflection}
+              </p>
             ) : (
-              <ul className="space-y-2">
-                {habits.map((h) => {
-                  const done = entry.habitsCompleted.includes(h.id);
-                  return (
-                    <li
-                      key={h.id}
-                      className={`flex items-center gap-3 rounded-xl border border-border/70 px-4 py-3 ${
-                        done ? "bg-white/[0.05]" : "bg-white/[0.02] opacity-70"
-                      }`}
-                    >
-                      <span
-                        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${
-                          done
-                            ? "gradient-warm text-accent-foreground"
-                            : "border border-border bg-background/40 text-transparent"
-                        }`}
-                      >
-                        <Check size={14} strokeWidth={3} />
-                      </span>
-                      <span className="text-sm font-medium">{h.name}</span>
-                    </li>
-                  );
-                })}
-              </ul>
+              <p className="text-sm text-muted-foreground">
+                No escribiste una reflexión este día.
+              </p>
             )}
-            <p className="mt-4 text-xs text-muted-foreground">
-              {entry.habitsCompleted.length}/{habits.length} completados
-            </p>
           </section>
 
           <section className="glass-card p-6">
-            <div className="mb-4 flex items-center gap-2">
-              <Sparkles size={16} className="text-accent" />
-              <h2 className="font-display text-xl font-semibold">Diario</h2>
-            </div>
-
-            {entry.guidedAnswer && (
-              <div className="rounded-xl border border-border/60 bg-white/[0.03] p-4">
-                <p className="font-display text-sm font-medium text-foreground">
-                  {entry.guidedQuestion}
-                </p>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-foreground/90">
-                  {entry.guidedAnswer}
-                </p>
-              </div>
-            )}
-
-            {entry.journalText ? (
-              <div className="mt-4">
-                <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Notas libres
-                </p>
-                <p className="whitespace-pre-wrap rounded-xl border border-border bg-white/[0.03] p-3 text-sm">
-                  {entry.journalText}
-                </p>
+            <h2 className="mb-4 font-display text-xl font-semibold">Estado de ánimo</h2>
+            {entry.mood != null ? (
+              <div className="flex items-center gap-4">
+                <span className="font-display text-5xl font-bold text-gradient">
+                  {entry.mood}
+                </span>
+                <div className="flex-1">
+                  <div className="h-2 rounded-full bg-border/60">
+                    <div
+                      className="h-2 rounded-full gradient-primary"
+                      style={{ width: `${(entry.mood / 10) * 100}%` }}
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Escala del 1 al 10
+                  </p>
+                </div>
               </div>
             ) : (
-              !entry.guidedAnswer && (
-                <p className="text-sm text-muted-foreground">
-                  No escribiste en el diario este día.
-                </p>
-              )
+              <p className="text-sm text-muted-foreground">
+                No registraste tu estado de ánimo este día.
+              </p>
             )}
           </section>
         </div>
