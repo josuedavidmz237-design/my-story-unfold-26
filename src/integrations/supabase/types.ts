@@ -118,6 +118,36 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_plans: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          id: string
+          plan_text: string
+          user_id: string
+          week_number: number
+          year: number
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          plan_text?: string
+          user_id?: string
+          week_number: number
+          year: number
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          plan_text?: string
+          user_id?: string
+          week_number?: number
+          year?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
