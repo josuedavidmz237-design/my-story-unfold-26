@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Trash2, Plus, X, Loader2, ListChecks } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
-import { useStore, type Habit } from "@/lib/mock-store";
+import { useHabits, type Habit, type HabitInput } from "@/lib/use-habits";
 
 export const Route = createFileRoute("/habitos")({
   head: () => ({
@@ -28,10 +28,15 @@ export const Route = createFileRoute("/habitos")({
 });
 
 function HabitsPage() {
-  const { habits, addHabit, updateHabit, deleteHabit } = useStore();
+  const { habits, loading, error, createHabit, updateHabit, deleteHabit } = useHabits();
   const [editing, setEditing] = useState<Habit | null>(null);
   const [creating, setCreating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Habit | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    if (error) toast.error("No pudimos cargar tus hábitos");
+  }, [error]);
 
   return (
     <div className="space-y-8">
@@ -52,7 +57,11 @@ function HabitsPage() {
         </button>
       </header>
 
-      {habits.length === 0 ? (
+      {loading ? (
+        <div className="glass-card grid place-items-center p-12">
+          <Loader2 className="animate-spin text-muted-foreground" size={24} />
+        </div>
+      ) : habits.length === 0 ? (
         <div className="glass-card flex flex-col items-center gap-4 p-10 text-center">
           <div className="grid h-14 w-14 place-items-center rounded-2xl gradient-primary shadow-glow">
             <ListChecks className="text-white" size={26} />
@@ -73,17 +82,14 @@ function HabitsPage() {
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
           {habits.map((h) => (
-            <li
-              key={h.id}
-              className="glass-card flex items-center gap-3 p-4"
-            >
+            <li key={h.id} className="glass-card flex items-center gap-3 p-4">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl gradient-primary text-white">
                 <ListChecks size={18} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{h.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  Creado {new Date(h.createdAt).toLocaleDateString("es-PE")}
+                  {h.categoria ? `${h.categoria} · ` : ""}Meta {h.meta_diaria}/día
                 </p>
               </div>
               <div className="flex items-center gap-1">
@@ -114,11 +120,16 @@ function HabitsPage() {
             setCreating(false);
             setEditing(null);
           }}
-          onSubmit={async (name) => {
+          onSubmit={async (input) => {
             const res = editing
-              ? updateHabit(editing.id, name)
-              : addHabit(name);
-            if (!res.ok) return res.error ?? "Error";
+              ? await updateHabit(editing.id, input)
+              : await createHabit(input);
+            if (!res.ok) {
+              toast.error(
+                editing ? "No pudimos actualizar el hábito" : "No pudimos crear el hábito",
+              );
+              return res.error ?? "Error";
+            }
             toast.success(editing ? "Hábito actualizado" : "Hábito creado");
             return null;
           }}
@@ -130,8 +141,15 @@ function HabitsPage() {
           title="¿Eliminar este hábito?"
           description={`"${confirmDelete.name}" dejará de aparecer en tu check-in diario.`}
           onCancel={() => setConfirmDelete(null)}
-          onConfirm={() => {
-            deleteHabit(confirmDelete.id);
+          onConfirm={async () => {
+            if (deleting) return;
+            setDeleting(true);
+            const res = await deleteHabit(confirmDelete.id);
+            setDeleting(false);
+            if (!res.ok) {
+              toast.error("No pudimos eliminar el hábito");
+              return;
+            }
             toast.success("Hábito eliminado");
             setConfirmDelete(null);
           }}
@@ -147,19 +165,36 @@ function HabitFormModal({
   onClose,
 }: {
   initial?: Habit;
-  onSubmit: (name: string) => Promise<string | null>;
+  onSubmit: (input: HabitInput) => Promise<string | null>;
   onClose: () => void;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
+  const [categoria, setCategoria] = useState(initial?.categoria ?? "");
+  const [metaDiaria, setMetaDiaria] = useState(String(initial?.meta_diaria ?? 1));
+  const [nota, setNota] = useState(initial?.nota ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const inputClass =
+    "w-full rounded-xl border border-border bg-white/[0.05] px-3.5 py-2.5 text-sm outline-none focus:border-ring focus:shadow-[0_0_0_3px_oklch(0.68_0.22_305_/_25%)]";
+  const labelClass =
+    "mb-1.5 block text-xs font-medium uppercase tracking-wide text-muted-foreground";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const meta = Number(metaDiaria);
+    if (!metaDiaria.trim() || !Number.isFinite(meta) || meta <= 0) {
+      setError("La meta diaria es obligatoria y debe ser mayor a 0");
+      return;
+    }
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 400));
-    const err = await onSubmit(name);
+    const err = await onSubmit({
+      name: name.trim(),
+      categoria: categoria.trim() || null,
+      meta_diaria: Math.floor(meta),
+      nota: nota.trim() || null,
+    });
     setSaving(false);
     if (err) {
       setError(err);
@@ -185,9 +220,7 @@ function HabitFormModal({
         </div>
         <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
           <label className="block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Nombre del hábito
-            </span>
+            <span className={labelClass}>Nombre del hábito</span>
             <input
               autoFocus
               value={name}
@@ -196,13 +229,50 @@ function HabitFormModal({
                 setError(null);
               }}
               maxLength={50}
-              className="w-full rounded-xl border border-border bg-white/[0.05] px-3.5 py-2.5 text-sm outline-none focus:border-ring focus:shadow-[0_0_0_3px_oklch(0.68_0.22_305_/_25%)]"
+              className={inputClass}
               placeholder="Ej. Correr 20 minutos"
             />
             <div className="mt-1 flex items-center justify-between text-xs">
               <span className="font-medium text-destructive">{error ?? ""}</span>
               <span className="text-muted-foreground">{name.length}/50</span>
             </div>
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className={labelClass}>Categoría</span>
+              <input
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                maxLength={30}
+                className={inputClass}
+                placeholder="Ej. Salud"
+              />
+            </label>
+            <label className="block">
+              <span className={labelClass}>Meta diaria</span>
+              <input
+                type="number"
+                min={1}
+                value={metaDiaria}
+                onChange={(e) => {
+                  setMetaDiaria(e.target.value);
+                  setError(null);
+                }}
+                className={inputClass}
+                placeholder="1"
+              />
+            </label>
+          </div>
+          <label className="block">
+            <span className={labelClass}>Nota</span>
+            <textarea
+              value={nota}
+              onChange={(e) => setNota(e.target.value)}
+              rows={2}
+              maxLength={200}
+              className={`${inputClass} resize-none`}
+              placeholder="Algo que quieras recordar sobre este hábito"
+            />
           </label>
           <div className="flex justify-end gap-2 pt-2">
             <button
