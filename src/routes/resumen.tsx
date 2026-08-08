@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Sparkles, RefreshCw, Loader2, Wand2 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { useStore, type WeeklySummary } from "@/lib/mock-store";
+import { useHabits } from "@/lib/use-habits";
 
 export const Route = createFileRoute("/resumen")({
   head: () => ({
@@ -50,7 +51,8 @@ function pick<T>(arr: T[]) {
 }
 
 function SummaryPage() {
-  const { habits, entries, weeklySummary, setWeeklySummary } = useStore();
+  const { entries, weeklySummary, setWeeklySummary } = useStore();
+  const { habits } = useHabits();
   const [loading, setLoading] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
 
