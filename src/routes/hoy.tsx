@@ -4,6 +4,7 @@ import { Check, Loader2, Sparkles, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { guidedQuestionForToday, todayKey, useStore } from "@/lib/mock-store";
+import { useHabits } from "@/lib/use-habits";
 
 export const Route = createFileRoute("/hoy")({
   head: () => ({
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/hoy")({
 });
 
 function TodayPage() {
-  const { habits, entries, saveTodayEntry } = useStore();
+  const { entries, saveTodayEntry } = useStore();
+  const { habits, loading: habitsLoading } = useHabits();
   const key = todayKey();
   const existing = entries[key];
   const question = useMemo(() => guidedQuestionForToday(), []);
@@ -96,7 +98,11 @@ function TodayPage() {
             </span>
           </div>
 
-          {habits.length === 0 ? (
+          {habitsLoading ? (
+            <div className="grid place-items-center py-8">
+              <Loader2 className="animate-spin text-muted-foreground" size={20} />
+            </div>
+          ) : habits.length === 0 ? (
             <EmptyHabits />
           ) : (
             <ul className="space-y-2">
