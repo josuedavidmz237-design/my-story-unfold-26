@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type User = { id: string; name: string; email: string };
-export type Habit = { id: string; name: string; icon?: string; createdAt: string };
 export type DailyEntry = {
   id: string;
   date: string; // YYYY-MM-DD
@@ -39,25 +38,14 @@ export function guidedQuestionForToday() {
   return GUIDED_QUESTIONS[day % GUIDED_QUESTIONS.length];
 }
 
-const DEFAULT_HABITS: Habit[] = [
-  { id: "h1", name: "Leer 20 minutos", icon: "BookOpen", createdAt: new Date().toISOString() },
-  { id: "h2", name: "Meditar", icon: "Sparkles", createdAt: new Date().toISOString() },
-  { id: "h3", name: "Caminar 30 min", icon: "Footprints", createdAt: new Date().toISOString() },
-  { id: "h4", name: "Escribir en el diario", icon: "PenLine", createdAt: new Date().toISOString() },
-];
-
 type Store = {
   user: User | null;
-  habits: Habit[];
   entries: Record<string, DailyEntry>;
   weeklySummary: WeeklySummary | null;
   weeklyPlans: Record<string, string>;
   weeklySummaries: Record<string, WeeklySummary>;
   login: (name: string, email: string) => void;
   logout: () => void;
-  addHabit: (name: string, icon?: string) => { ok: boolean; error?: string };
-  updateHabit: (id: string, name: string, icon?: string) => { ok: boolean; error?: string };
-  deleteHabit: (id: string) => void;
   saveTodayEntry: (data: { habitsCompleted: string[]; journalText: string; guidedAnswer: string }) => void;
   setWeeklySummary: (s: WeeklySummary) => void;
   setWeeklyPlan: (weekKey: string, text: string) => void;
@@ -69,7 +57,6 @@ const Ctx = createContext<Store | null>(null);
 
 export function MockStoreProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [habits, setHabits] = useState<Habit[]>(DEFAULT_HABITS);
   const [entries, setEntries] = useState<Record<string, DailyEntry>>({});
   const [weeklySummary, setSummary] = useState<WeeklySummary | null>(null);
   const [weeklyPlans, setWeeklyPlans] = useState<Record<string, string>>({});
@@ -82,7 +69,6 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const s = JSON.parse(raw);
         if (s.user) setUser(s.user);
-        if (s.habits) setHabits(s.habits);
         if (s.entries) setEntries(s.entries);
         if (s.weeklySummary) setSummary(s.weeklySummary);
         if (s.weeklyPlans) setWeeklyPlans(s.weeklyPlans);
@@ -95,16 +81,15 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
     try {
       sessionStorage.setItem(
         "mystoryai:store",
-        JSON.stringify({ user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries }),
+        JSON.stringify({ user, entries, weeklySummary, weeklyPlans, weeklySummaries }),
       );
     } catch {}
-  }, [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries]);
+  }, [user, entries, weeklySummary, weeklyPlans, weeklySummaries]);
 
 
   const value = useMemo<Store>(
     () => ({
       user,
-      habits,
       entries,
       weeklySummary,
       weeklyPlans,
@@ -112,37 +97,6 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       login: (name, email) =>
         setUser({ id: "u_mock", name: name || email.split("@")[0] || "Amig@", email }),
       logout: () => setUser(null),
-      addHabit: (name, icon) => {
-        const trimmed = name.trim();
-        if (!trimmed) return { ok: false, error: "El nombre no puede estar vacío" };
-        if (trimmed.length > 50) return { ok: false, error: "Máximo 50 caracteres" };
-        if (habits.some((h) => h.name.toLowerCase() === trimmed.toLowerCase()))
-          return { ok: false, error: "Ya tienes un hábito con ese nombre" };
-        setHabits((prev) => [
-          ...prev,
-          { id: `h_${Date.now()}`, name: trimmed, icon, createdAt: new Date().toISOString() },
-        ]);
-        return { ok: true };
-      },
-      updateHabit: (id, name, icon) => {
-        const trimmed = name.trim();
-        if (!trimmed) return { ok: false, error: "El nombre no puede estar vacío" };
-        if (trimmed.length > 50) return { ok: false, error: "Máximo 50 caracteres" };
-        if (habits.some((h) => h.id !== id && h.name.toLowerCase() === trimmed.toLowerCase()))
-          return { ok: false, error: "Ya tienes un hábito con ese nombre" };
-        setHabits((prev) => prev.map((h) => (h.id === id ? { ...h, name: trimmed, icon } : h)));
-        return { ok: true };
-      },
-      deleteHabit: (id) => {
-        setHabits((prev) => prev.filter((h) => h.id !== id));
-        setEntries((prev) => {
-          const next = { ...prev };
-          for (const k of Object.keys(next)) {
-            next[k] = { ...next[k], habitsCompleted: next[k].habitsCompleted.filter((x) => x !== id) };
-          }
-          return next;
-        });
-      },
       saveTodayEntry: ({ habitsCompleted, journalText, guidedAnswer }) => {
         const date = todayKey();
         setEntries((prev) => ({
@@ -162,7 +116,7 @@ export function MockStoreProvider({ children }: { children: ReactNode }) {
       setWeeklySummaryFor: (wk, s) =>
         setWeeklySummaries((prev) => ({ ...prev, [wk]: s })),
     }),
-    [user, habits, entries, weeklySummary, weeklyPlans, weeklySummaries],
+    [user, entries, weeklySummary, weeklyPlans, weeklySummaries],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
