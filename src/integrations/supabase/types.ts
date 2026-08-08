@@ -78,21 +78,33 @@ export type Database = {
       }
       habits: {
         Row: {
+          categoria: string | null
           created_at: string
+          fecha: string
           id: string
+          meta_diaria: number
           name: string
+          nota: string | null
           user_id: string
         }
         Insert: {
+          categoria?: string | null
           created_at?: string
+          fecha?: string
           id?: string
+          meta_diaria?: number
           name: string
+          nota?: string | null
           user_id?: string
         }
         Update: {
+          categoria?: string | null
           created_at?: string
+          fecha?: string
           id?: string
+          meta_diaria?: number
           name?: string
+          nota?: string | null
           user_id?: string
         }
         Relationships: []
