@@ -33,24 +33,21 @@ function TodayPage() {
   const { habits, loading: habitsLoading } = useHabits();
   const key = todayKey();
   const existing = entries[key];
-  const question = useMemo(() => guidedQuestionForToday(), []);
 
   const [completed, setCompleted] = useState<string[]>(existing?.habitsCompleted ?? []);
   const [journalText, setJournalText] = useState(existing?.journalText ?? "");
-  const [guidedAnswer, setGuidedAnswer] = useState(existing?.guidedAnswer ?? "");
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
 
   useEffect(() => {
     setCompleted(existing?.habitsCompleted ?? []);
     setJournalText(existing?.journalText ?? "");
-    setGuidedAnswer(existing?.guidedAnswer ?? "");
   }, [existing?.id]);
 
   const toggle = (id: string) =>
     setCompleted((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
-  const canSave = completed.length > 0 || journalText.trim() || guidedAnswer.trim();
+  const canSave = completed.length > 0 || journalText.trim();
 
   const handleSave = async () => {
     if (!canSave) return;
@@ -59,7 +56,7 @@ function TodayPage() {
     saveTodayEntry({
       habitsCompleted: completed,
       journalText: journalText.trim(),
-      guidedAnswer: guidedAnswer.trim(),
+      guidedAnswer: existing?.guidedAnswer ?? "",
     });
     setSaving(false);
     setJustSaved(true);
