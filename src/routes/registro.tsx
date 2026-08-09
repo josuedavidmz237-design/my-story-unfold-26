@@ -90,7 +90,9 @@ function RegisterPage() {
           <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-primary shadow-glow">
             <Sparkles className="text-white" size={26} />
           </div>
-          <h1 className="font-display text-4xl font-bold text-gradient">MyStoryAI</h1>
+          <h1 className="font-display text-4xl font-bold text-gradient">
+            MyStoryAI — Crear cuenta
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Tu historia de progreso, contada por ti (y por la IA).
           </p>

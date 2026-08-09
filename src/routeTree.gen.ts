@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResumenRouteImport } from './routes/resumen'
 import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -24,6 +25,11 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResumenRoute = ResumenRouteImport.update({
   id: '/resumen',
   path: '/resumen',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/registro': typeof RegistroRoute
   '/resumen': typeof ResumenRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/registro'
     | '/resumen'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/registro'
     | '/resumen'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/registro'
     | '/resumen'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   RegistroRoute: typeof RegistroRoute
   ResumenRoute: typeof ResumenRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DiaDateRoute: typeof DiaDateRoute
@@ -217,6 +230,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/resumen': {
       id: '/resumen'
       path: '/resumen'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   RegistroRoute: RegistroRoute,
   ResumenRoute: ResumenRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
