@@ -27,21 +27,25 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 }
 
 
+// Public project values (publishable/anon key is safe to ship in client code).
+// Used as a fallback when build-time env injection is unavailable.
+const FALLBACK_SUPABASE_URL = 'https://knrimtzuoafmocwbbovm.supabase.co';
+const FALLBACK_SUPABASE_PUBLISHABLE_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtucmltdHp1b2FmbW9jd2Jib3ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUxODE4NDYsImV4cCI6MjEwMDc1Nzg0Nn0.DuT6pgW1osv9Taqd_WnJjL0MZehFTaS1iiKxVynEqfo';
+
+function serverEnv(name: string): string | undefined {
+  return typeof process !== 'undefined' ? process.env?.[name] : undefined;
+}
+
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-  const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
-
-  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-    const missing = [
-      ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
-      ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
-    ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
-  }
+  const SUPABASE_URL =
+    import.meta.env.VITE_SUPABASE_URL || serverEnv('SUPABASE_URL') || FALLBACK_SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY =
+    import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+    serverEnv('SUPABASE_PUBLISHABLE_KEY') ||
+    FALLBACK_SUPABASE_PUBLISHABLE_KEY;
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     global: {
