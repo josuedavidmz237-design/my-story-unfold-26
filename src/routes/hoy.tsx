@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Loader2, Sparkles, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
-import { guidedQuestionForToday, todayKey, useStore } from "@/lib/mock-store";
+import { todayKey, useStore } from "@/lib/mock-store";
 import { useHabits } from "@/lib/use-habits";
 
 export const Route = createFileRoute("/hoy")({
