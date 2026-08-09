@@ -155,34 +155,22 @@ function TodayPage() {
 
         {/* Journal */}
         <section className="glass-card p-6">
-          <div className="mb-4 flex items-center gap-2">
+          <div className="mb-2 flex items-center gap-2">
             <Sparkles size={16} className="text-accent" />
             <h2 className="font-display text-xl font-semibold">Tu diario</h2>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-white/[0.03] p-4">
-            <p className="font-display text-base font-medium leading-snug text-foreground">
-              {question}
-            </p>
-            <textarea
-              value={guidedAnswer}
-              onChange={(e) => setGuidedAnswer(e.target.value)}
-              placeholder="Responde en una o dos líneas…"
-              className="mt-3 w-full resize-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-              rows={2}
-            />
-          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            ¿Qué tal tu día? ¿Qué no quieres olvidar? ¿Qué agradeces hoy? ¿Cómo te sentiste?
+          </p>
 
-          <label className="mt-4 block">
-            <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Notas libres del día
-            </span>
+          <label className="block">
             <textarea
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
-              placeholder="¿Qué pasó hoy? ¿Qué sentiste? Sin filtro."
+              placeholder="Escribe libremente lo que quieras recordar de hoy…"
               className="w-full resize-y rounded-xl border border-border bg-white/[0.03] p-3 text-sm outline-none focus:border-ring focus:shadow-[0_0_0_3px_oklch(0.68_0.22_305_/_25%)]"
-              rows={6}
+              rows={8}
               maxLength={2000}
             />
             <span className="mt-1 block text-right text-[11px] text-muted-foreground">
