@@ -34,10 +34,24 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   const handleLogout = async () => {
     setMenuOpen(false);
-    await supabase.auth.signOut();
+    try {
+      // scope local: no falla si el token del servidor ya expiró
+      await supabase.auth.signOut({ scope: "local" });
+    } catch {
+      /* ignoramos: igual limpiamos abajo */
+    }
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith("sb-") && k.includes("auth-token"))
+        .forEach((k) => localStorage.removeItem(k));
+    } catch {
+      /* storage no disponible */
+    }
     toast.success("Sesión cerrada exitosamente");
-    navigate({ to: "/login", replace: true });
+    // Redirección dura para descartar cualquier estado en memoria
+    window.location.replace("/login");
   };
+
 
   if (loading || !user) {
     return (
