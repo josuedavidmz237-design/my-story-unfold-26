@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://my-story-unfold-26.lovable.app/sitemap.xml
