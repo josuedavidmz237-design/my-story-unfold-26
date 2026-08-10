@@ -18,6 +18,7 @@ import { Route as HoyRouteImport } from './routes/hoy'
 import { Route as HabitosRouteImport } from './routes/habitos'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrimestreQuarterRouteImport } from './routes/trimestre.$quarter'
 import { Route as SemanaWeekRouteImport } from './routes/semana.$week'
 import { Route as DiaDateRouteImport } from './routes/dia.$date'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -70,6 +71,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrimestreQuarterRoute = TrimestreQuarterRouteImport.update({
+  id: '/trimestre/$quarter',
+  path: '/trimestre/$quarter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SemanaWeekRoute = SemanaWeekRouteImport.update({
   id: '/semana/$week',
   path: '/semana/$week',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
+  '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
+  '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
   '/semana/$week': typeof SemanaWeekRoute
+  '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
     | '/semana/$week'
+    | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
     | '/semana/$week'
+    | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   id:
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
     | '/semana/$week'
+    | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DiaDateRoute: typeof DiaDateRoute
   SemanaWeekRoute: typeof SemanaWeekRoute
+  TrimestreQuarterRoute: typeof TrimestreQuarterRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trimestre/$quarter': {
+      id: '/trimestre/$quarter'
+      path: '/trimestre/$quarter'
+      fullPath: '/trimestre/$quarter'
+      preLoaderRoute: typeof TrimestreQuarterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/semana/$week': {
       id: '/semana/$week'
       path: '/semana/$week'
@@ -353,6 +373,7 @@ const rootRouteChildren: RootRouteChildren = {
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DiaDateRoute: DiaDateRoute,
   SemanaWeekRoute: SemanaWeekRoute,
+  TrimestreQuarterRoute: TrimestreQuarterRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
