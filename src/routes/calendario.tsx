@@ -13,6 +13,8 @@ import {
 } from "@/lib/date-utils";
 import { supabase } from "@/integrations/supabase/client";
 
+const QUARTER_BY_WEEK: Record<number, number> = { 13: 1, 26: 2, 39: 3, 52: 4 };
+
 type DailyEntryRow = { entry_date: string; reflection: string; mood: number | null };
 type WeeklyPlanRow = {
   year: number;
