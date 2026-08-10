@@ -191,42 +191,69 @@ function CalendarPage() {
           <div className="space-y-1">
             {weeks.map((row) => {
               const wk = weekKey(row[0]);
-              const { week } = isoWeek(row[0]);
+              const { week, year: isoYear } = isoWeek(row[0]);
               const plan = weeklyPlans[wk];
               const hasPlan = !!plan && !!plan.plan_text;
               const hasSummary = !!plan && !!plan.ai_summary;
+              const quarterNum = QUARTER_BY_WEEK[week];
+              const weekEnded =
+                today.getTime() >
+                new Date(
+                  row[6].getFullYear(),
+                  row[6].getMonth(),
+                  row[6].getDate(),
+                  23,
+                  59,
+                  59,
+                ).getTime();
+              const showQuarterBadge = !!quarterNum && weekEnded;
               return (
                 <div
                   key={wk}
                   className="grid grid-cols-[3rem_repeat(7,minmax(0,1fr))] gap-1"
                 >
-                  <Link
-                    to="/semana/$week"
-                    params={{ week: wk }}
-                    className="group relative flex flex-col items-center justify-center rounded-xl border border-border/60 bg-white/[0.02] py-2 text-center transition hover:border-primary/60 hover:bg-primary/10"
-                    aria-label={`Semana ${week}`}
-                  >
-                    <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground group-hover:text-primary">
-                      S
-                    </span>
-                    <span className="font-display text-base font-semibold text-foreground/90 group-hover:text-primary">
-                      {week}
-                    </span>
-                    <span className="mt-0.5 flex gap-0.5">
-                      {hasPlan && (
-                        <span
-                          className="h-1 w-1 rounded-full bg-primary"
-                          aria-label="Plan"
-                        />
-                      )}
-                      {hasSummary && (
-                        <span
-                          className="h-1 w-1 rounded-full bg-accent"
-                          aria-label="Resumen"
-                        />
-                      )}
-                    </span>
-                  </Link>
+                  <div className="relative">
+                    <Link
+                      to="/semana/$week"
+                      params={{ week: wk }}
+                      className="group relative flex h-full flex-col items-center justify-center rounded-xl border border-border/60 bg-white/[0.02] py-2 text-center transition hover:border-primary/60 hover:bg-primary/10"
+                      aria-label={`Semana ${week}`}
+                    >
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-muted-foreground group-hover:text-primary">
+                        S
+                      </span>
+                      <span className="font-display text-base font-semibold text-foreground/90 group-hover:text-primary">
+                        {week}
+                      </span>
+                      <span className="mt-0.5 flex gap-0.5">
+                        {hasPlan && (
+                          <span
+                            className="h-1 w-1 rounded-full bg-primary"
+                            aria-label="Plan"
+                          />
+                        )}
+                        {hasSummary && (
+                          <span
+                            className="h-1 w-1 rounded-full bg-accent"
+                            aria-label="Resumen"
+                          />
+                        )}
+                      </span>
+                    </Link>
+
+                    {showQuarterBadge && (
+                      <Link
+                        to="/trimestre/$quarter"
+                        params={{ quarter: `${isoYear}-T${quarterNum}` }}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Trimestre ${quarterNum} de ${isoYear}`}
+                        className="absolute -right-1 -top-1 z-10 rounded-md border border-accent/60 bg-accent/15 px-1 py-px text-[9px] font-bold leading-tight text-accent transition hover:bg-accent/30"
+                      >
+                        T{quarterNum}
+                      </Link>
+                    )}
+                  </div>
+
 
                   {row.map((d) => {
                     const key = dateKey(d);
