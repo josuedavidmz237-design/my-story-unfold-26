@@ -109,6 +109,36 @@ export type Database = {
         }
         Relationships: []
       }
+      quarterly_recaps: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          id: string
+          plan_text: string
+          quarter_number: number
+          user_id: string
+          year: number
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          plan_text?: string
+          quarter_number: number
+          user_id?: string
+          year: number
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          plan_text?: string
+          quarter_number?: number
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       user_goals: {
         Row: {
           created_at: string
