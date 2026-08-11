@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      annual_recaps: {
+        Row: {
+          ai_summary: string | null
+          created_at: string
+          id: string
+          user_id: string
+          year: number
+        }
+        Insert: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          user_id: string
+          year: number
+        }
+        Update: {
+          ai_summary?: string | null
+          created_at?: string
+          id?: string
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       daily_entries: {
         Row: {
           created_at: string
