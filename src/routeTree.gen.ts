@@ -16,10 +16,12 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HoyRouteImport } from './routes/hoy'
 import { Route as HabitosRouteImport } from './routes/habitos'
+import { Route as CalendarioAnualRouteImport } from './routes/calendario-anual'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrimestreQuarterRouteImport } from './routes/trimestre.$quarter'
 import { Route as SemanaWeekRouteImport } from './routes/semana.$week'
+import { Route as ResumenAnualYearRouteImport } from './routes/resumen-anual.$year'
 import { Route as DiaDateRouteImport } from './routes/dia.$date'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -61,6 +63,11 @@ const HabitosRoute = HabitosRouteImport.update({
   path: '/habitos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarioAnualRoute = CalendarioAnualRouteImport.update({
+  id: '/calendario-anual',
+  path: '/calendario-anual',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalendarioRoute = CalendarioRouteImport.update({
   id: '/calendario',
   path: '/calendario',
@@ -79,6 +86,11 @@ const TrimestreQuarterRoute = TrimestreQuarterRouteImport.update({
 const SemanaWeekRoute = SemanaWeekRouteImport.update({
   id: '/semana/$week',
   path: '/semana/$week',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResumenAnualYearRoute = ResumenAnualYearRouteImport.update({
+  id: '/resumen-anual/$year',
+  path: '/resumen-anual/$year',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiaDateRoute = DiaDateRouteImport.update({
@@ -113,6 +125,7 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -123,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -131,6 +145,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -141,6 +156,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -150,6 +166,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -160,6 +177,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -170,6 +188,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -180,6 +199,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -188,6 +208,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -198,6 +219,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -206,6 +228,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -216,6 +239,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -225,6 +249,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarioRoute: typeof CalendarioRoute
+  CalendarioAnualRoute: typeof CalendarioAnualRoute
   HabitosRoute: typeof HabitosRoute
   HoyRoute: typeof HoyRoute
   LoginRoute: typeof LoginRoute
@@ -235,6 +260,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DiaDateRoute: typeof DiaDateRoute
+  ResumenAnualYearRoute: typeof ResumenAnualYearRoute
   SemanaWeekRoute: typeof SemanaWeekRoute
   TrimestreQuarterRoute: typeof TrimestreQuarterRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -292,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HabitosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendario-anual': {
+      id: '/calendario-anual'
+      path: '/calendario-anual'
+      fullPath: '/calendario-anual'
+      preLoaderRoute: typeof CalendarioAnualRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calendario': {
       id: '/calendario'
       path: '/calendario'
@@ -318,6 +351,13 @@ declare module '@tanstack/react-router' {
       path: '/semana/$week'
       fullPath: '/semana/$week'
       preLoaderRoute: typeof SemanaWeekRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resumen-anual/$year': {
+      id: '/resumen-anual/$year'
+      path: '/resumen-anual/$year'
+      fullPath: '/resumen-anual/$year'
+      preLoaderRoute: typeof ResumenAnualYearRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dia/$date': {
@@ -361,6 +401,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarioRoute: CalendarioRoute,
+  CalendarioAnualRoute: CalendarioAnualRoute,
   HabitosRoute: HabitosRoute,
   HoyRoute: HoyRoute,
   LoginRoute: LoginRoute,
@@ -372,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DiaDateRoute: DiaDateRoute,
+  ResumenAnualYearRoute: ResumenAnualYearRoute,
   SemanaWeekRoute: SemanaWeekRoute,
   TrimestreQuarterRoute: TrimestreQuarterRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,

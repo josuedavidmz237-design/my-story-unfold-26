@@ -9,6 +9,7 @@ import {
   dateKey,
   isoWeek,
   monthMatrix,
+  parseDateKey,
   weekKey,
 } from "@/lib/date-utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,11 @@ type WeeklyPlanRow = {
 };
 
 export const Route = createFileRoute("/calendario")({
+  validateSearch: (search) => {
+    const result: { mes?: string } = {};
+    if (typeof search.mes === "string") result.mes = search.mes;
+    return result;
+  },
   head: () => ({
     meta: [
       { title: "Calendario — MyStoryAI" },
@@ -47,10 +53,15 @@ export const Route = createFileRoute("/calendario")({
 });
 
 function CalendarPage() {
+  const { mes } = Route.useSearch();
   const today = new Date();
-  const [cursor, setCursor] = useState(
-    () => new Date(today.getFullYear(), today.getMonth(), 1),
-  );
+  const [cursor, setCursor] = useState(() => {
+    if (mes && /^\d{4}-\d{2}$/.test(mes)) {
+      const d = parseDateKey(`${mes}-01`);
+      if (!Number.isNaN(d.getTime())) return d;
+    }
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
 
   const weeks = useMemo(
     () => monthMatrix(cursor.getFullYear(), cursor.getMonth()),
