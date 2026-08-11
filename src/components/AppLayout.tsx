@@ -139,18 +139,18 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
       {/* Bottom nav (mobile) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-border/60 bg-background/80 backdrop-blur-xl">
-        <ul className="mx-auto grid max-w-md grid-cols-4">
+        <ul className="mx-auto grid max-w-lg grid-cols-5">
           {NAV.map(({ to, label, icon: Icon }) => {
             const active = pathname === to || (to === "/hoy" && pathname === "/");
             return (
               <li key={to}>
                 <Link
                   to={to}
-                  className={`flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors ${
+                  className={`flex flex-col items-center gap-1 py-3 text-[10px] font-medium transition-colors ${
                     active ? "text-primary" : "text-muted-foreground"
                   }`}
                 >
-                  <Icon size={20} />
+                  <Icon size={18} />
                   {label}
                 </Link>
               </li>
