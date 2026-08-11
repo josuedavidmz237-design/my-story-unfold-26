@@ -16,6 +16,7 @@ import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HoyRouteImport } from './routes/hoy'
 import { Route as HabitosRouteImport } from './routes/habitos'
+import { Route as CalendarioAnualRouteImport } from './routes/calendario-anual'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrimestreQuarterRouteImport } from './routes/trimestre.$quarter'
@@ -59,6 +60,11 @@ const HoyRoute = HoyRouteImport.update({
 const HabitosRoute = HabitosRouteImport.update({
   id: '/habitos',
   path: '/habitos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarioAnualRoute = CalendarioAnualRouteImport.update({
+  id: '/calendario-anual',
+  path: '/calendario-anual',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarioRoute = CalendarioRouteImport.update({
@@ -113,6 +119,7 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
+  '/calendario-anual': typeof CalendarioAnualRoute
   '/habitos': typeof HabitosRoute
   '/hoy': typeof HoyRoute
   '/login': typeof LoginRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/calendario'
+    | '/calendario-anual'
     | '/habitos'
     | '/hoy'
     | '/login'
@@ -225,6 +237,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarioRoute: typeof CalendarioRoute
+  CalendarioAnualRoute: typeof CalendarioAnualRoute
   HabitosRoute: typeof HabitosRoute
   HoyRoute: typeof HoyRoute
   LoginRoute: typeof LoginRoute
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/habitos'
       fullPath: '/habitos'
       preLoaderRoute: typeof HabitosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendario-anual': {
+      id: '/calendario-anual'
+      path: '/calendario-anual'
+      fullPath: '/calendario-anual'
+      preLoaderRoute: typeof CalendarioAnualRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendario': {
@@ -361,6 +381,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarioRoute: CalendarioRoute,
+  CalendarioAnualRoute: CalendarioAnualRoute,
   HabitosRoute: HabitosRoute,
   HoyRoute: HoyRoute,
   LoginRoute: LoginRoute,
