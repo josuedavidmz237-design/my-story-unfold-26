@@ -21,6 +21,7 @@ import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrimestreQuarterRouteImport } from './routes/trimestre.$quarter'
 import { Route as SemanaWeekRouteImport } from './routes/semana.$week'
+import { Route as ResumenAnualYearRouteImport } from './routes/resumen-anual.$year'
 import { Route as DiaDateRouteImport } from './routes/dia.$date'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -87,6 +88,11 @@ const SemanaWeekRoute = SemanaWeekRouteImport.update({
   path: '/semana/$week',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResumenAnualYearRoute = ResumenAnualYearRouteImport.update({
+  id: '/resumen-anual/$year',
+  path: '/resumen-anual/$year',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiaDateRoute = DiaDateRouteImport.update({
   id: '/dia/$date',
   path: '/dia/$date',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/dia/$date': typeof DiaDateRoute
+  '/resumen-anual/$year': typeof ResumenAnualYearRoute
   '/semana/$week': typeof SemanaWeekRoute
   '/trimestre/$quarter': typeof TrimestreQuarterRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/dia/$date'
+    | '/resumen-anual/$year'
     | '/semana/$week'
     | '/trimestre/$quarter'
     | '/.lovable/oauth/consent'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DiaDateRoute: typeof DiaDateRoute
+  ResumenAnualYearRoute: typeof ResumenAnualYearRoute
   SemanaWeekRoute: typeof SemanaWeekRoute
   TrimestreQuarterRoute: typeof TrimestreQuarterRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SemanaWeekRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/resumen-anual/$year': {
+      id: '/resumen-anual/$year'
+      path: '/resumen-anual/$year'
+      fullPath: '/resumen-anual/$year'
+      preLoaderRoute: typeof ResumenAnualYearRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dia/$date': {
       id: '/dia/$date'
       path: '/dia/$date'
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DiaDateRoute: DiaDateRoute,
+  ResumenAnualYearRoute: ResumenAnualYearRoute,
   SemanaWeekRoute: SemanaWeekRoute,
   TrimestreQuarterRoute: TrimestreQuarterRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
