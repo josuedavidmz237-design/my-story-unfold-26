@@ -25,9 +25,11 @@ type WeeklyPlanRow = {
 };
 
 export const Route = createFileRoute("/calendario")({
-  validateSearch: (search) => ({
-    mes: typeof search.mes === "string" ? search.mes : undefined,
-  }),
+  validateSearch: (search) => {
+    const result: { mes?: string } = {};
+    if (typeof search.mes === "string") result.mes = search.mes;
+    return result;
+  },
   head: () => ({
     meta: [
       { title: "Calendario — MyStoryAI" },
