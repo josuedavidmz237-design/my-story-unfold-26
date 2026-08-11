@@ -26,7 +26,7 @@ export type Database = {
           ai_summary?: string | null
           created_at?: string
           id?: string
-          user_id: string
+          user_id?: string
           year: number
         }
         Update: {
