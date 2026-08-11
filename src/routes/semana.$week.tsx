@@ -184,7 +184,6 @@ function WeekPage() {
     <div className="space-y-6">
       <Link
         to="/calendario"
-        search={{}}
         className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft size={16} /> Volver al calendario

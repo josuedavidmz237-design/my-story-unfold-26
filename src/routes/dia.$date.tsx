@@ -81,7 +81,6 @@ function DayDetailPage() {
       <div className="flex items-center justify-between gap-4">
         <Link
           to="/calendario"
-          search={{}}
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={16} /> Volver al calendario
