@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { CalendarCheck, ListChecks, Sparkles, LogOut, CalendarDays } from "lucide-react";
+import { CalendarCheck, ListChecks, Sparkles, LogOut, CalendarDays, Calendar } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,7 +8,8 @@ import { useAuth } from "@/lib/auth-context";
 const NAV = [
   { to: "/hoy", label: "Hoy", icon: CalendarCheck },
   { to: "/habitos", label: "Hábitos", icon: ListChecks },
-  { to: "/calendario", label: "Calendario", icon: CalendarDays },
+  { to: "/calendario", label: "Mensual", icon: CalendarDays },
+  { to: "/calendario-anual", label: "Anual", icon: Calendar },
   { to: "/resumen", label: "Resumen", icon: Sparkles },
 ] as const;
 
