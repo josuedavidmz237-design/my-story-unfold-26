@@ -5,6 +5,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, authErrorMessage } from "@/lib/auth-context";
+import { checkPasswordLeaked } from "@/lib/password.functions";
 
 export const Route = createFileRoute("/registro")({
   head: () => ({
@@ -55,6 +56,17 @@ function RegisterPage() {
     setTouched({ email: true, password: true, confirm: true });
     if (!isValid || loading) return;
     setLoading(true);
+
+    // Rechaza contraseñas presentes en filtraciones conocidas (verificación en servidor).
+    const leakCheck = await checkPasswordLeaked({ data: { password } });
+    if (leakCheck.leaked) {
+      setLoading(false);
+      toast.error(
+        "Esa contraseña apareció en filtraciones de datos conocidas. Elige otra distinta.",
+      );
+      return;
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
       password,
