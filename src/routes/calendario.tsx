@@ -9,6 +9,7 @@ import {
   dateKey,
   isoWeek,
   monthMatrix,
+  parseDateKey,
   weekKey,
 } from "@/lib/date-utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,9 @@ type WeeklyPlanRow = {
 };
 
 export const Route = createFileRoute("/calendario")({
+  validateSearch: (search) => ({
+    mes: typeof search.mes === "string" ? search.mes : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Calendario — MyStoryAI" },
